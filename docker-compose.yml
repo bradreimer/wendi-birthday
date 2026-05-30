@@ -1,0 +1,7 @@
+services:
+  wendi-birthday:
+    build: .
+    container_name: wendi-birthday
+    ports:
+      - "3003:80"
+    restart: unless-stopped

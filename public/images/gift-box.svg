@@ -1,0 +1,9 @@
+<svg width="800" height="800" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Birthday gift box">
+  <rect width="800" height="800" fill="#f0f9ff"/>
+  <rect x="180" y="260" width="440" height="110" rx="20" fill="#4dabf7"/>
+  <rect x="200" y="360" width="400" height="260" rx="20" fill="#74c0fc"/>
+  <rect x="372" y="220" width="56" height="400" fill="#ff6b6b"/>
+  <rect x="200" y="450" width="400" height="56" fill="#ff6b6b"/>
+  <path d="M400 260C360 200 300 150 250 190C200 230 240 320 320 320C356 320 382 300 400 260Z" fill="#ff8787"/>
+  <path d="M400 260C440 200 500 150 550 190C600 230 560 320 480 320C444 320 418 300 400 260Z" fill="#ff8787"/>
+</svg>

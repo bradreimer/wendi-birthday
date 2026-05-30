@@ -1,0 +1,13 @@
+<svg width="800" height="800" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schnauzer with hearts">
+  <rect width="800" height="800" fill="#fff0f6"/>
+  <circle cx="400" cy="420" r="215" fill="#dadada"/>
+  <circle cx="305" cy="390" r="78" fill="#c0c0c0"/>
+  <circle cx="495" cy="390" r="78" fill="#c0c0c0"/>
+  <ellipse cx="400" cy="505" rx="126" ry="95" fill="#f1f3f5"/>
+  <circle cx="348" cy="458" r="13" fill="#212529"/>
+  <circle cx="452" cy="458" r="13" fill="#212529"/>
+  <ellipse cx="400" cy="516" rx="25" ry="19" fill="#343a40"/>
+  <path d="M332 548C350 566 370 576 400 576C430 576 450 566 468 548" stroke="#6c757d" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M240 180C240 148 268 126 297 126C327 126 342 147 350 161C358 147 373 126 403 126C432 126 460 148 460 180C460 230 410 268 350 316C290 268 240 230 240 180Z" fill="#f06595"/>
+  <path d="M500 210C500 188 519 172 540 172C561 172 571 187 578 197C585 187 595 172 616 172C637 172 656 188 656 210C656 246 620 273 578 308C536 273 500 246 500 210Z" fill="#faa2c1"/>
+</svg>

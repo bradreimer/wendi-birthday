@@ -1,0 +1,15 @@
+<svg width="800" height="800" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Burst of balloons">
+  <rect width="800" height="800" fill="#fff1f2"/>
+  <ellipse cx="230" cy="260" rx="80" ry="110" fill="#ff6b6b"/>
+  <ellipse cx="400" cy="200" rx="90" ry="120" fill="#ffd43b"/>
+  <ellipse cx="575" cy="280" rx="78" ry="108" fill="#4dabf7"/>
+  <ellipse cx="300" cy="430" rx="88" ry="120" fill="#69db7c"/>
+  <ellipse cx="500" cy="430" rx="88" ry="120" fill="#f06595"/>
+  <path d="M230 370C260 500 190 590 260 680" stroke="#a61e4d" stroke-width="6" fill="none"/>
+  <path d="M400 320C420 470 350 570 420 700" stroke="#a61e4d" stroke-width="6" fill="none"/>
+  <path d="M575 390C610 510 540 600 610 690" stroke="#a61e4d" stroke-width="6" fill="none"/>
+  <circle cx="170" cy="120" r="10" fill="#ff922b"/>
+  <circle cx="640" cy="120" r="10" fill="#12b886"/>
+  <circle cx="710" cy="220" r="10" fill="#845ef7"/>
+  <circle cx="90" cy="300" r="10" fill="#fcc419"/>
+</svg>
