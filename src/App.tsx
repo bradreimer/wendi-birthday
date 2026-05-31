@@ -163,7 +163,9 @@ const guests: Guest[] = [
   }
 ];
 
-const getVariationIndexForPressCount = (pressCount: number): number => {
+const POP_ANIMATION_DELAY_MS = 120;
+
+const getVariationIndex = (pressCount: number): number => {
   if (pressCount <= 0) return 0;
   return (pressCount - 1) % celebrationVariations.length;
 };
@@ -201,13 +203,13 @@ export default function App() {
   const [surpriseMessage, setSurpriseMessage] = useState('Press for a surprise schnauzer cake moment!');
   const [surpriseFlashCount, setSurpriseFlashCount] = useState(0);
 
-  const celebrationIndex = useMemo(() => getVariationIndexForPressCount(buttonPressCount), [buttonPressCount]);
+  const celebrationIndex = useMemo(() => getVariationIndex(buttonPressCount), [buttonPressCount]);
   const activeVariation = useMemo(() => celebrationVariations[celebrationIndex], [celebrationIndex]);
 
   const onGetWishes = () => {
     setButtonPressCount((current) => {
       const next = current + 1;
-      const nextVariation = celebrationVariations[getVariationIndexForPressCount(next)];
+      const nextVariation = celebrationVariations[getVariationIndex(next)];
       launchConfetti(nextVariation);
       const surprise = randomFrom(nextVariation.surprises);
       setSurpriseMessage(surprise);
@@ -259,7 +261,7 @@ export default function App() {
                 <span
                   className="pop-pill"
                   key={`${pop}-${index}`}
-                  style={{ '--pop-delay': `${index * 120}ms` } as CSSProperties}
+                  style={{ '--pop-delay': `${index * POP_ANIMATION_DELAY_MS}ms` } as CSSProperties}
                 >
                   {pop}
                 </span>
