@@ -5,6 +5,7 @@ type CelebrationVariation = {
   title: string;
   body: string;
   pops: string[];
+  surprises: string[];
   confetti: {
     colors: string[];
     spread: number;
@@ -26,6 +27,7 @@ const celebrationVariations: CelebrationVariation[] = [
     title: 'Schnauzer Zoomie Cake Dash',
     body: 'Fibs and Hermann launch into turbo zoomies the moment a birthday cake appears.',
     pops: ['🐾 Zoomie alert!', '🎂 Cake sprint!', '✨ Paw confetti!'],
+    surprises: ['Hermann does a surprise spin for bonus cake.', 'Fibs discovers a hidden sprinkle stash.'],
     confetti: {
       colors: ['#ff6b6b', '#ffd43b', '#ff922b'],
       spread: 62,
@@ -37,6 +39,7 @@ const celebrationVariations: CelebrationVariation[] = [
     title: 'Sprinkle Snout Celebration',
     body: 'Birthday sprinkles are flying and both schnauzers are on official frosting patrol duty.',
     pops: ['🧁 Sprinkle pop!', '🐶 Snout boop!', '🎉 Frosting burst!'],
+    surprises: ['Cake confetti turns into glittery paw prints.', 'A sneaky cupcake appears for schnauzer quality control.'],
     confetti: {
       colors: ['#ff5d8f', '#9775fa', '#ffa94d'],
       spread: 74,
@@ -48,6 +51,7 @@ const celebrationVariations: CelebrationVariation[] = [
     title: 'Double Schnauzer Cake Guard',
     body: 'Hermann takes the left side, Fibs takes the right, and no cake crumb is left behind.',
     pops: ['🦴 Guard mode!', '🎂 Crumb patrol!', '💛 Birthday paws!'],
+    surprises: ['Both guards approve a second slice.', 'The crumb alarm triggers a mini dance break.'],
     confetti: {
       colors: ['#12b886', '#fab005', '#ff8787'],
       spread: 58,
@@ -59,6 +63,7 @@ const celebrationVariations: CelebrationVariation[] = [
     title: 'Candle Wish Schnauzer Waltz',
     body: 'The cake candles glow while two fancy schnauzers do a tiny birthday dance around them.',
     pops: ['🕯️ Candle glow!', '🐾 Dance twirl!', '🎈 Party pop!'],
+    surprises: ['A surprise chorus of birthday barks starts.', 'The dance ends with synchronized schnauzer bows.'],
     confetti: {
       colors: ['#228be6', '#ff922b', '#ffec99'],
       spread: 80,
@@ -70,6 +75,7 @@ const celebrationVariations: CelebrationVariation[] = [
     title: 'Mega Cake Paw Parade',
     body: 'Five layers of birthday cake and maximum schnauzer excitement unlock the party finale.',
     pops: ['🎂 Mega cake!', '🐕 Paw parade!', '💥 Final pop!'],
+    surprises: ['Finale mode: sparkly paw fireworks unlocked.', 'Cake towers get a surprise confetti crown.'],
     confetti: {
       colors: ['#fa5252', '#fcc419', '#845ef7'],
       spread: 92,
@@ -157,6 +163,14 @@ const guests: Guest[] = [
   }
 ];
 
+const NO_PRESSES_YET = -1;
+const toCelebrationIndex = (count: number): number =>
+  ((count % celebrationVariations.length) + celebrationVariations.length) % celebrationVariations.length;
+
+function randomFrom(items: string[]): string {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
 function launchConfetti(variation: CelebrationVariation): void {
   const defaults = {
     spread: variation.confetti.spread,
@@ -181,26 +195,34 @@ const assetUrl = (path: string): string => `${import.meta.env.BASE_URL}${path}`;
 
 export default function App() {
   const [partyMode, setPartyMode] = useState(false);
-  const [buttonPressCount, setButtonPressCount] = useState(-1);
+  const [buttonPressCount, setButtonPressCount] = useState(NO_PRESSES_YET);
   const [showGuests, setShowGuests] = useState(false);
+  const [surpriseMessage, setSurpriseMessage] = useState('Press for a surprise schnauzer cake moment!');
+  const [surpriseFlashCount, setSurpriseFlashCount] = useState(0);
 
-  const celebrationIndex = useMemo(
-    () => ((buttonPressCount % celebrationVariations.length) + celebrationVariations.length) % celebrationVariations.length,
-    [buttonPressCount]
-  );
-  const activeVariation = useMemo(
-    () => celebrationVariations[celebrationIndex],
-    [celebrationIndex]
-  );
+  const celebrationIndex = useMemo(() => toCelebrationIndex(buttonPressCount), [buttonPressCount]);
+  const activeVariation = useMemo(() => celebrationVariations[celebrationIndex], [celebrationIndex]);
 
   const onGetWishes = () => {
     setButtonPressCount((current) => {
       const next = current + 1;
-      const nextVariation =
-        celebrationVariations[
-          ((next % celebrationVariations.length) + celebrationVariations.length) % celebrationVariations.length
-        ];
+      const nextVariation = celebrationVariations[toCelebrationIndex(next)];
       launchConfetti(nextVariation);
+      const surprise = randomFrom(nextVariation.surprises);
+      setSurpriseMessage(surprise);
+      setSurpriseFlashCount((flash) => flash + 1);
+
+      if ((next + 1) % celebrationVariations.length === 0) {
+        confetti({
+          particleCount: 180,
+          spread: 110,
+          ticks: 210,
+          scalar: 1.25,
+          startVelocity: 40,
+          colors: ['#ff6b6b', '#fcc419', '#845ef7', '#12b886'],
+          origin: { x: 0.5, y: 0.35 }
+        });
+      }
       return next;
     });
     setPartyMode(true);
@@ -242,6 +264,9 @@ export default function App() {
                 </span>
               ))}
             </div>
+          </article>
+          <article className="surprise-banner" key={surpriseFlashCount} aria-live="polite">
+            <p>🎁 Surprise: {surpriseMessage}</p>
           </article>
         </section>
 
