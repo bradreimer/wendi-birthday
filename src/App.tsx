@@ -1,9 +1,17 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
 import confetti from 'canvas-confetti';
 
-type Wish = {
+type CelebrationVariation = {
   title: string;
   body: string;
+  pops: string[];
+  surprises: string[];
+  confetti: {
+    colors: string[];
+    spread: number;
+    startVelocity: number;
+    scalar: number;
+  };
 };
 
 type NewsArticle = {
@@ -14,34 +22,78 @@ type NewsArticle = {
   stamp: string;
 };
 
-const wishes: Wish[] = [
+const celebrationVariations: CelebrationVariation[] = [
   {
-    title: 'Master Teacher Magic',
-    body: 'May your year be full of A+ days, delighted students, and well-deserved joy.'
+    title: 'Schnauzer Zoomie Cake Dash',
+    body: 'Fibs and Hermann launch into turbo zoomies the moment a birthday cake appears.',
+    pops: ['🐾 Zoomie alert!', '🎂 Cake sprint!', '✨ Paw confetti!'],
+    surprises: ['Hermann does a surprise spin for bonus cake.', 'Fibs discovers a hidden sprinkle stash.'],
+    confetti: {
+      colors: ['#ff6b6b', '#ffd43b', '#ff922b'],
+      spread: 62,
+      startVelocity: 30,
+      scalar: 1
+    }
   },
   {
-    title: 'Kitchen Joy',
-    body: 'May every recipe turn golden, every dessert sparkle, and every meal gather smiles.'
+    title: 'Sprinkle Snout Celebration',
+    body: 'Birthday sprinkles are flying and both schnauzers are on official frosting patrol duty.',
+    pops: ['🧁 Sprinkle pop!', '🐶 Snout boop!', '🎉 Frosting burst!'],
+    surprises: ['Cake confetti turns into glittery paw prints.', 'A sneaky cupcake appears for schnauzer quality control.'],
+    confetti: {
+      colors: ['#ff5d8f', '#9775fa', '#ffa94d'],
+      spread: 74,
+      startVelocity: 34,
+      scalar: 1.15
+    }
   },
   {
-    title: 'Schnauzer Energy',
-    body: 'May your days be as loyal, playful, and full of zoomies as your favorite schnauzers.'
+    title: 'Double Schnauzer Cake Guard',
+    body: 'Hermann takes the left side, Fibs takes the right, and no cake crumb is left behind.',
+    pops: ['🦴 Guard mode!', '🎂 Crumb patrol!', '💛 Birthday paws!'],
+    surprises: ['Both guards approve a second slice.', 'The crumb alarm triggers a mini dance break.'],
+    confetti: {
+      colors: ['#12b886', '#fab005', '#ff8787'],
+      spread: 58,
+      startVelocity: 29,
+      scalar: 0.95
+    }
   },
   {
-    title: 'Birthday Glow-Up',
-    body: 'Big laughter, cozy moments, and a year that feels made exactly for you, Wendi.'
+    title: 'Candle Wish Schnauzer Waltz',
+    body: 'The cake candles glow while two fancy schnauzers do a tiny birthday dance around them.',
+    pops: ['🕯️ Candle glow!', '🐾 Dance twirl!', '🎈 Party pop!'],
+    surprises: ['A surprise chorus of birthday barks starts.', 'The dance ends with synchronized schnauzer bows.'],
+    confetti: {
+      colors: ['#228be6', '#ff922b', '#ffec99'],
+      spread: 80,
+      startVelocity: 32,
+      scalar: 1.08
+    }
+  },
+  {
+    title: 'Mega Cake Paw Parade',
+    body: 'Five layers of birthday cake and maximum schnauzer excitement unlock the party finale.',
+    pops: ['🎂 Mega cake!', '🐕 Paw parade!', '💥 Final pop!'],
+    surprises: ['Finale mode: sparkly paw fireworks unlocked.', 'Cake towers get a surprise confetti crown.'],
+    confetti: {
+      colors: ['#fa5252', '#fcc419', '#845ef7'],
+      spread: 92,
+      startVelocity: 36,
+      scalar: 1.2
+    }
   }
 ];
 
 const gallery = [
-  { src: '/images/schnauzer-party.svg', alt: 'Schnauzer in a party hat' },
-  { src: '/images/birthday-cake.svg', alt: 'Birthday cake with candles' },
-  { src: '/images/teacher-star.svg', alt: 'Teacher-themed gold star' },
-  { src: '/images/cooking-fun.svg', alt: 'Cooking-themed illustration' },
-  { src: '/images/balloon-burst.svg', alt: 'Colorful birthday balloons' },
-  { src: '/images/schnauzer-cooking.svg', alt: 'Schnauzer with cooking hat' },
-  { src: '/images/gift-box.svg', alt: 'Birthday gift box' },
-  { src: '/images/schnauzer-hearts.svg', alt: 'Schnauzer with hearts' }
+  { src: 'images/schnauzer-party.svg', alt: 'Schnauzer in a party hat' },
+  { src: 'images/birthday-cake.svg', alt: 'Birthday cake with candles' },
+  { src: 'images/teacher-star.svg', alt: 'Teacher-themed gold star' },
+  { src: 'images/cooking-fun.svg', alt: 'Cooking-themed illustration' },
+  { src: 'images/balloon-burst.svg', alt: 'Colorful birthday balloons' },
+  { src: 'images/schnauzer-cooking.svg', alt: 'Schnauzer with cooking hat' },
+  { src: 'images/gift-box.svg', alt: 'Birthday gift box' },
+  { src: 'images/schnauzer-hearts.svg', alt: 'Schnauzer with hearts' }
 ];
 
 const celebrations: NewsArticle[] = [
@@ -89,83 +141,100 @@ const celebrations: NewsArticle[] = [
   }
 ];
 
-function launchConfetti(): void {
+type Guest = {
+  id: string;
+  image: string;
+  alt: string;
+  quote: string;
+};
+
+const guests: Guest[] = [
+  {
+    id: 'hermann',
+    image: 'images/hermann-birthday-cartoon.svg',
+    alt: 'Cartoon Hermann schnauzer in a birthday hat',
+    quote: 'Hermann says: Happy Birthday, Wendi!'
+  },
+  {
+    id: 'fibs',
+    image: 'images/fibs-birthday-cartoon.svg',
+    alt: 'Cartoon Fibs schnauzer with a birthday bow tie',
+    quote: 'Fibs says: Happy Birthday, Wendi!'
+  }
+];
+
+const POP_ANIMATION_DELAY_MS = 120;
+
+const getVariationIndex = (pressCount: number): number => {
+  if (pressCount <= 0) return 0;
+  return (pressCount - 1) % celebrationVariations.length;
+};
+
+function randomFrom(items: string[]): string {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function launchConfetti(variation: CelebrationVariation): void {
   const defaults = {
-    spread: 65,
+    spread: variation.confetti.spread,
     ticks: 150,
     gravity: 0.85,
     decay: 0.93,
-    startVelocity: 32,
-    colors: ['#ff6b6b', '#ff922b', '#ffd43b', '#12b886', '#228be6', '#fa5252']
+    startVelocity: variation.confetti.startVelocity,
+    colors: variation.confetti.colors
   };
 
-  confetti({ ...defaults, particleCount: 100, scalar: 0.9, origin: { x: 0.2, y: 0.65 } });
-  confetti({ ...defaults, particleCount: 130, scalar: 1.1, origin: { x: 0.8, y: 0.65 } });
-  confetti({ ...defaults, particleCount: 150, scalar: 1.3, origin: { x: 0.5, y: 0.45 } });
-}
-
-const LLAMA_URL = 'http://schnode.local:8081/v1/chat/completions';
-const LLAMA_MODEL = 'gemma-3-it-4B-Q4_K_M.gguf';
-
-async function fetchAiWish(): Promise<string> {
-  const res = await fetch(LLAMA_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: LLAMA_MODEL,
-      messages: [
-        {
-          role: 'system',
-          content:
-            'You are a warm, witty birthday wish writer. Keep responses to 2-3 sentences max. No introductions or sign-offs.'
-        },
-        {
-          role: 'user',
-          content:
-            'Write a unique, heartfelt birthday wish for Wendi — a phenomenal teacher who loves cooking and adores her schnauzers Hermann and Fibs. Make it personal, fun, and joyful.'
-        }
-      ],
-      max_tokens: 120,
-      temperature: 0.9
-    })
+  confetti({ ...defaults, particleCount: 90, scalar: variation.confetti.scalar * 0.9, origin: { x: 0.2, y: 0.65 } });
+  confetti({ ...defaults, particleCount: 120, scalar: variation.confetti.scalar, origin: { x: 0.8, y: 0.65 } });
+  confetti({
+    ...defaults,
+    particleCount: 140,
+    scalar: variation.confetti.scalar * 1.15,
+    origin: { x: 0.5, y: 0.42 }
   });
-  if (!res.ok) throw new Error(`AI server error: ${res.status}`);
-  const data = await res.json();
-  return data.choices[0].message.content.trim();
 }
+
+const assetUrl = (path: string): string => {
+  const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
+  return `${import.meta.env.BASE_URL}${normalizedPath}`;
+};
 
 export default function App() {
   const [partyMode, setPartyMode] = useState(false);
-  const [wishIndex, setWishIndex] = useState(0);
+  const [buttonPressCount, setButtonPressCount] = useState(0);
   const [showGuests, setShowGuests] = useState(false);
-  const [aiWish, setAiWish] = useState<string | null>(null);
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
+  const [surpriseMessage, setSurpriseMessage] = useState('Press for a surprise schnauzer cake moment!');
+  const [surpriseFlashCount, setSurpriseFlashCount] = useState(0);
 
-  const wish = useMemo(() => wishes[wishIndex], [wishIndex]);
+  const celebrationIndex = useMemo(() => getVariationIndex(buttonPressCount), [buttonPressCount]);
+  const activeVariation = useMemo(() => celebrationVariations[celebrationIndex], [celebrationIndex]);
 
   const onGetWishes = () => {
-    setWishIndex((current) => (current + 1) % wishes.length);
+    setButtonPressCount((current) => {
+      const next = current + 1;
+      const nextVariation = celebrationVariations[getVariationIndex(next)];
+      launchConfetti(nextVariation);
+      const surprise = randomFrom(nextVariation.surprises);
+      setSurpriseMessage(surprise);
+      setSurpriseFlashCount((flash) => flash + 1);
+
+      if (next > 0 && next % celebrationVariations.length === 0) {
+        confetti({
+          particleCount: 180,
+          spread: 110,
+          ticks: 210,
+          scalar: 1.25,
+          startVelocity: 40,
+          colors: ['#ff6b6b', '#fcc419', '#845ef7', '#12b886'],
+          origin: { x: 0.5, y: 0.35 }
+        });
+      }
+      return next;
+    });
     setPartyMode(true);
     setShowGuests(true);
-    launchConfetti();
     window.setTimeout(() => setPartyMode(false), 2200);
     window.setTimeout(() => setShowGuests(false), 3600);
-  };
-
-  const onAiWish = async () => {
-    setAiLoading(true);
-    setAiError(null);
-    setAiWish(null);
-    try {
-      const wish = await fetchAiWish();
-      setAiWish(wish);
-      launchConfetti();
-    } catch (e) {
-      setAiError('The AI wishing machine is taking a break 🐾 Try again!');
-    } finally {
-      setAiLoading(false);
-    }
   };
 
   return (
@@ -181,24 +250,30 @@ export default function App() {
           </p>
           <div className="button-row">
             <button className="wish-button" onClick={onGetWishes}>
-              Get Birthday Wishes
-            </button>
-            <button className="wish-button ai-button" onClick={onAiWish} disabled={aiLoading}>
-              {aiLoading ? '✨ Thinking…' : '🤖 AI Birthday Wish'}
+              Birthday Celebration Pop
             </button>
           </div>
           <article className="wish-panel" aria-live="polite">
-            <h2>{wish.title}</h2>
-            <p>{wish.body}</p>
+            <h2>{activeVariation.title}</h2>
+            <p>{activeVariation.body}</p>
           </article>
-          {(aiWish || aiError || aiLoading) && (
-            <article className="wish-panel ai-wish-panel" aria-live="polite">
-              <h2>✨ AI Says…</h2>
-              {aiLoading && <p className="ai-loading">Summoning birthday magic from the AI…</p>}
-              {aiError && <p className="ai-error">{aiError}</p>}
-              {aiWish && <p>{aiWish}</p>}
-            </article>
-          )}
+          <article className="pop-strip" aria-live="polite" key={buttonPressCount}>
+            <p className="pop-strip-title">Animated pops</p>
+            <div className="pop-strip-items">
+              {activeVariation.pops.map((pop, index) => (
+                <span
+                  className="pop-pill"
+                  key={`${pop}-${index}`}
+                  style={{ '--pop-delay': `${index * POP_ANIMATION_DELAY_MS}ms` } as CSSProperties}
+                >
+                  {pop}
+                </span>
+              ))}
+            </div>
+          </article>
+          <article className="surprise-banner" key={surpriseFlashCount} aria-live="polite">
+            <p>🎁 Surprise: {surpriseMessage}</p>
+          </article>
         </section>
 
         <section className="news-desk card reveal-up-delayed" aria-label="Celebration news desk">
@@ -224,7 +299,7 @@ export default function App() {
         <section className="gallery card reveal-up-delayed" aria-label="Birthday and schnauzer gallery">
           {gallery.map((item) => (
             <figure className="tile" key={item.src}>
-              <img src={item.src} alt={item.alt} loading="lazy" />
+              <img src={assetUrl(item.src)} alt={item.alt} loading="lazy" />
             </figure>
           ))}
         </section>
@@ -234,30 +309,12 @@ export default function App() {
           aria-live="polite"
           aria-hidden={!showGuests}
         >
-          <article className="guest-card brad">
-            <img
-              src="http://schnode.local:3002/_astro/breimer_profile.DYMzLsg8_2iwWhu.webp"
-              alt="Brad Reimer portrait"
-              loading="lazy"
-            />
-            <p>Brad says: Happy Birthday, Wendi!</p>
-          </article>
-          <article className="guest-card hermann">
-            <img
-              src="http://schnode.local:3002/_astro/hermann_profile.BB4SKGlN_Z2cin5p.webp"
-              alt="Hermann schnauzer portrait"
-              loading="lazy"
-            />
-            <p>Hermann says: Happy Birthday, Wendi!</p>
-          </article>
-          <article className="guest-card fibs">
-            <img
-              src="http://schnode.local:3002/_astro/fibs_profile.BQUKAJ6l_Z1C3dz5.webp"
-              alt="Fibs schnauzer portrait"
-              loading="lazy"
-            />
-            <p>Fibs says: Happy Birthday, Wendi!</p>
-          </article>
+          {guests.map((guest) => (
+            <article className={`guest-card ${guest.id}`} key={guest.id}>
+              <img src={assetUrl(guest.image)} alt={guest.alt} loading="lazy" />
+              <p>{guest.quote}</p>
+            </article>
+          ))}
         </section>
       </main>
     </div>
