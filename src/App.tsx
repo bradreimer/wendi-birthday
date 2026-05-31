@@ -163,9 +163,9 @@ const guests: Guest[] = [
   }
 ];
 
-const toCelebrationIndex = (completedPresses: number): number => {
-  if (completedPresses <= 0) return 0;
-  return (completedPresses - 1) % celebrationVariations.length;
+const getVariationIndexForPressCount = (pressCount: number): number => {
+  if (pressCount <= 0) return 0;
+  return (pressCount - 1) % celebrationVariations.length;
 };
 
 function randomFrom(items: string[]): string {
@@ -201,13 +201,13 @@ export default function App() {
   const [surpriseMessage, setSurpriseMessage] = useState('Press for a surprise schnauzer cake moment!');
   const [surpriseFlashCount, setSurpriseFlashCount] = useState(0);
 
-  const celebrationIndex = useMemo(() => toCelebrationIndex(buttonPressCount), [buttonPressCount]);
+  const celebrationIndex = useMemo(() => getVariationIndexForPressCount(buttonPressCount), [buttonPressCount]);
   const activeVariation = useMemo(() => celebrationVariations[celebrationIndex], [celebrationIndex]);
 
   const onGetWishes = () => {
     setButtonPressCount((current) => {
       const next = current + 1;
-      const nextVariation = celebrationVariations[toCelebrationIndex(next)];
+      const nextVariation = celebrationVariations[getVariationIndexForPressCount(next)];
       launchConfetti(nextVariation);
       const surprise = randomFrom(nextVariation.surprises);
       setSurpriseMessage(surprise);
@@ -245,10 +245,7 @@ export default function App() {
           </p>
           <div className="button-row">
             <button className="wish-button" onClick={onGetWishes}>
-              Birthday Celebration Pop{' '}
-              {buttonPressCount === 0
-                ? '(ready for 1/5)'
-                : `(${celebrationIndex + 1}/${celebrationVariations.length})`}
+              Birthday Celebration Pop
             </button>
           </div>
           <article className="wish-panel" aria-live="polite">
