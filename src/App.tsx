@@ -194,7 +194,10 @@ function launchConfetti(variation: CelebrationVariation): void {
   });
 }
 
-const assetUrl = (path: string): string => `${import.meta.env.BASE_URL}${path}`;
+const assetUrl = (path: string): string => {
+  const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
+  return `${import.meta.env.BASE_URL}${normalizedPath}`;
+};
 
 export default function App() {
   const [partyMode, setPartyMode] = useState(false);
@@ -215,7 +218,7 @@ export default function App() {
       setSurpriseMessage(surprise);
       setSurpriseFlashCount((flash) => flash + 1);
 
-      if (next % celebrationVariations.length === 0) {
+      if (next > 0 && next % celebrationVariations.length === 0) {
         confetti({
           particleCount: 180,
           spread: 110,
