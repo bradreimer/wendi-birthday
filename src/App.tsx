@@ -1,9 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
 import confetti from 'canvas-confetti';
 
-type Wish = {
+type CelebrationVariation = {
   title: string;
   body: string;
+  pops: string[];
+  confetti: {
+    colors: string[];
+    spread: number;
+    startVelocity: number;
+    scalar: number;
+  };
 };
 
 type NewsArticle = {
@@ -14,22 +21,61 @@ type NewsArticle = {
   stamp: string;
 };
 
-const wishes: Wish[] = [
+const celebrationVariations: CelebrationVariation[] = [
   {
-    title: 'Master Teacher Magic',
-    body: 'May your year be full of A+ days, delighted students, and well-deserved joy.'
+    title: 'Schnauzer Zoomie Cake Dash',
+    body: 'Fibs and Hermann launch into turbo zoomies the moment a birthday cake appears.',
+    pops: ['🐾 Zoomie alert!', '🎂 Cake sprint!', '✨ Paw confetti!'],
+    confetti: {
+      colors: ['#ff6b6b', '#ffd43b', '#ff922b'],
+      spread: 62,
+      startVelocity: 30,
+      scalar: 1
+    }
   },
   {
-    title: 'Kitchen Joy',
-    body: 'May every recipe turn golden, every dessert sparkle, and every meal gather smiles.'
+    title: 'Sprinkle Snout Celebration',
+    body: 'Birthday sprinkles are flying and both schnauzers are on official frosting patrol duty.',
+    pops: ['🧁 Sprinkle pop!', '🐶 Snout boop!', '🎉 Frosting burst!'],
+    confetti: {
+      colors: ['#ff5d8f', '#9775fa', '#ffa94d'],
+      spread: 74,
+      startVelocity: 34,
+      scalar: 1.15
+    }
   },
   {
-    title: 'Schnauzer Energy',
-    body: 'May your days be as loyal, playful, and full of zoomies as your favorite schnauzers.'
+    title: 'Double Schnauzer Cake Guard',
+    body: 'Hermann takes the left side, Fibs takes the right, and no cake crumb is left behind.',
+    pops: ['🦴 Guard mode!', '🎂 Crumb patrol!', '💛 Birthday paws!'],
+    confetti: {
+      colors: ['#12b886', '#fab005', '#ff8787'],
+      spread: 58,
+      startVelocity: 29,
+      scalar: 0.95
+    }
   },
   {
-    title: 'Birthday Glow-Up',
-    body: 'Big laughter, cozy moments, and a year that feels made exactly for you, Wendi.'
+    title: 'Candle Wish Schnauzer Waltz',
+    body: 'The cake candles glow while two fancy schnauzers do a tiny birthday dance around them.',
+    pops: ['🕯️ Candle glow!', '🐾 Dance twirl!', '🎈 Party pop!'],
+    confetti: {
+      colors: ['#228be6', '#ff922b', '#ffec99'],
+      spread: 80,
+      startVelocity: 32,
+      scalar: 1.08
+    }
+  },
+  {
+    title: 'Mega Cake Paw Parade',
+    body: 'Five layers of birthday cake and maximum schnauzer excitement unlock the party finale.',
+    pops: ['🎂 Mega cake!', '🐕 Paw parade!', '💥 Final pop!'],
+    confetti: {
+      colors: ['#fa5252', '#fcc419', '#845ef7'],
+      spread: 92,
+      startVelocity: 36,
+      scalar: 1.2
+    }
   }
 ];
 
@@ -111,35 +157,54 @@ const guests: Guest[] = [
   }
 ];
 
-function launchConfetti(): void {
+function launchConfetti(variation: CelebrationVariation): void {
   const defaults = {
-    spread: 65,
+    spread: variation.confetti.spread,
     ticks: 150,
     gravity: 0.85,
     decay: 0.93,
-    startVelocity: 32,
-    colors: ['#ff6b6b', '#ff922b', '#ffd43b', '#12b886', '#228be6', '#fa5252']
+    startVelocity: variation.confetti.startVelocity,
+    colors: variation.confetti.colors
   };
 
-  confetti({ ...defaults, particleCount: 100, scalar: 0.9, origin: { x: 0.2, y: 0.65 } });
-  confetti({ ...defaults, particleCount: 130, scalar: 1.1, origin: { x: 0.8, y: 0.65 } });
-  confetti({ ...defaults, particleCount: 150, scalar: 1.3, origin: { x: 0.5, y: 0.45 } });
+  confetti({ ...defaults, particleCount: 90, scalar: variation.confetti.scalar * 0.9, origin: { x: 0.2, y: 0.65 } });
+  confetti({ ...defaults, particleCount: 120, scalar: variation.confetti.scalar, origin: { x: 0.8, y: 0.65 } });
+  confetti({
+    ...defaults,
+    particleCount: 140,
+    scalar: variation.confetti.scalar * 1.15,
+    origin: { x: 0.5, y: 0.42 }
+  });
 }
 
 const assetUrl = (path: string): string => `${import.meta.env.BASE_URL}${path}`;
 
 export default function App() {
   const [partyMode, setPartyMode] = useState(false);
-  const [wishIndex, setWishIndex] = useState(0);
+  const [buttonPressCount, setButtonPressCount] = useState(-1);
   const [showGuests, setShowGuests] = useState(false);
 
-  const wish = useMemo(() => wishes[wishIndex], [wishIndex]);
+  const celebrationIndex = useMemo(
+    () => ((buttonPressCount % celebrationVariations.length) + celebrationVariations.length) % celebrationVariations.length,
+    [buttonPressCount]
+  );
+  const activeVariation = useMemo(
+    () => celebrationVariations[celebrationIndex],
+    [celebrationIndex]
+  );
 
   const onGetWishes = () => {
-    setWishIndex((current) => (current + 1) % wishes.length);
+    setButtonPressCount((current) => {
+      const next = current + 1;
+      const nextVariation =
+        celebrationVariations[
+          ((next % celebrationVariations.length) + celebrationVariations.length) % celebrationVariations.length
+        ];
+      launchConfetti(nextVariation);
+      return next;
+    });
     setPartyMode(true);
     setShowGuests(true);
-    launchConfetti();
     window.setTimeout(() => setPartyMode(false), 2200);
     window.setTimeout(() => setShowGuests(false), 3600);
   };
@@ -157,12 +222,26 @@ export default function App() {
           </p>
           <div className="button-row">
             <button className="wish-button" onClick={onGetWishes}>
-              Get Birthday Wishes
+              Birthday Celebration Pop ({celebrationIndex + 1}/{celebrationVariations.length})
             </button>
           </div>
           <article className="wish-panel" aria-live="polite">
-            <h2>{wish.title}</h2>
-            <p>{wish.body}</p>
+            <h2>{activeVariation.title}</h2>
+            <p>{activeVariation.body}</p>
+          </article>
+          <article className="pop-strip" aria-live="polite" key={buttonPressCount}>
+            <p className="pop-strip-title">Animated pops</p>
+            <div className="pop-strip-items">
+              {activeVariation.pops.map((pop, index) => (
+                <span
+                  className="pop-pill"
+                  key={`${pop}-${index}`}
+                  style={{ '--pop-delay': `${index * 120}ms` } as CSSProperties}
+                >
+                  {pop}
+                </span>
+              ))}
+            </div>
           </article>
         </section>
 
