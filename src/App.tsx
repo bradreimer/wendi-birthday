@@ -163,9 +163,10 @@ const guests: Guest[] = [
   }
 ];
 
-const NO_PRESSES_YET = -1;
-const toCelebrationIndex = (count: number): number =>
-  ((count % celebrationVariations.length) + celebrationVariations.length) % celebrationVariations.length;
+const toCelebrationIndex = (completedPresses: number): number => {
+  if (completedPresses <= 0) return 0;
+  return (completedPresses - 1) % celebrationVariations.length;
+};
 
 function randomFrom(items: string[]): string {
   return items[Math.floor(Math.random() * items.length)];
@@ -195,7 +196,7 @@ const assetUrl = (path: string): string => `${import.meta.env.BASE_URL}${path}`;
 
 export default function App() {
   const [partyMode, setPartyMode] = useState(false);
-  const [buttonPressCount, setButtonPressCount] = useState(NO_PRESSES_YET);
+  const [buttonPressCount, setButtonPressCount] = useState(0);
   const [showGuests, setShowGuests] = useState(false);
   const [surpriseMessage, setSurpriseMessage] = useState('Press for a surprise schnauzer cake moment!');
   const [surpriseFlashCount, setSurpriseFlashCount] = useState(0);
@@ -212,7 +213,7 @@ export default function App() {
       setSurpriseMessage(surprise);
       setSurpriseFlashCount((flash) => flash + 1);
 
-      if ((next + 1) % celebrationVariations.length === 0) {
+      if (next % celebrationVariations.length === 0) {
         confetti({
           particleCount: 180,
           spread: 110,
@@ -244,7 +245,10 @@ export default function App() {
           </p>
           <div className="button-row">
             <button className="wish-button" onClick={onGetWishes}>
-              Birthday Celebration Pop ({celebrationIndex + 1}/{celebrationVariations.length})
+              Birthday Celebration Pop{' '}
+              {buttonPressCount === 0
+                ? '(ready for 1/5)'
+                : `(${celebrationIndex + 1}/${celebrationVariations.length})`}
             </button>
           </div>
           <article className="wish-panel" aria-live="polite">
