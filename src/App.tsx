@@ -34,14 +34,14 @@ const wishes: Wish[] = [
 ];
 
 const gallery = [
-  { src: '/images/schnauzer-party.svg', alt: 'Schnauzer in a party hat' },
-  { src: '/images/birthday-cake.svg', alt: 'Birthday cake with candles' },
-  { src: '/images/teacher-star.svg', alt: 'Teacher-themed gold star' },
-  { src: '/images/cooking-fun.svg', alt: 'Cooking-themed illustration' },
-  { src: '/images/balloon-burst.svg', alt: 'Colorful birthday balloons' },
-  { src: '/images/schnauzer-cooking.svg', alt: 'Schnauzer with cooking hat' },
-  { src: '/images/gift-box.svg', alt: 'Birthday gift box' },
-  { src: '/images/schnauzer-hearts.svg', alt: 'Schnauzer with hearts' }
+  { src: 'images/schnauzer-party.svg', alt: 'Schnauzer in a party hat' },
+  { src: 'images/birthday-cake.svg', alt: 'Birthday cake with candles' },
+  { src: 'images/teacher-star.svg', alt: 'Teacher-themed gold star' },
+  { src: 'images/cooking-fun.svg', alt: 'Cooking-themed illustration' },
+  { src: 'images/balloon-burst.svg', alt: 'Colorful birthday balloons' },
+  { src: 'images/schnauzer-cooking.svg', alt: 'Schnauzer with cooking hat' },
+  { src: 'images/gift-box.svg', alt: 'Birthday gift box' },
+  { src: 'images/schnauzer-hearts.svg', alt: 'Schnauzer with hearts' }
 ];
 
 const celebrations: NewsArticle[] = [
@@ -89,6 +89,28 @@ const celebrations: NewsArticle[] = [
   }
 ];
 
+type Guest = {
+  id: string;
+  image: string;
+  alt: string;
+  quote: string;
+};
+
+const guests: Guest[] = [
+  {
+    id: 'hermann',
+    image: 'images/hermann-birthday-cartoon.svg',
+    alt: 'Cartoon Hermann schnauzer in a birthday hat',
+    quote: 'Hermann says: Happy Birthday, Wendi!'
+  },
+  {
+    id: 'fibs',
+    image: 'images/fibs-birthday-cartoon.svg',
+    alt: 'Cartoon Fibs schnauzer with a birthday bow tie',
+    quote: 'Fibs says: Happy Birthday, Wendi!'
+  }
+];
+
 function launchConfetti(): void {
   const defaults = {
     spread: 65,
@@ -104,43 +126,12 @@ function launchConfetti(): void {
   confetti({ ...defaults, particleCount: 150, scalar: 1.3, origin: { x: 0.5, y: 0.45 } });
 }
 
-const LLAMA_URL = 'http://schnode.local:8081/v1/chat/completions';
-const LLAMA_MODEL = 'gemma-3-it-4B-Q4_K_M.gguf';
-
-async function fetchAiWish(): Promise<string> {
-  const res = await fetch(LLAMA_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: LLAMA_MODEL,
-      messages: [
-        {
-          role: 'system',
-          content:
-            'You are a warm, witty birthday wish writer. Keep responses to 2-3 sentences max. No introductions or sign-offs.'
-        },
-        {
-          role: 'user',
-          content:
-            'Write a unique, heartfelt birthday wish for Wendi — a phenomenal teacher who loves cooking and adores her schnauzers Hermann and Fibs. Make it personal, fun, and joyful.'
-        }
-      ],
-      max_tokens: 120,
-      temperature: 0.9
-    })
-  });
-  if (!res.ok) throw new Error(`AI server error: ${res.status}`);
-  const data = await res.json();
-  return data.choices[0].message.content.trim();
-}
+const assetUrl = (path: string): string => `${import.meta.env.BASE_URL}${path}`;
 
 export default function App() {
   const [partyMode, setPartyMode] = useState(false);
   const [wishIndex, setWishIndex] = useState(0);
   const [showGuests, setShowGuests] = useState(false);
-  const [aiWish, setAiWish] = useState<string | null>(null);
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
 
   const wish = useMemo(() => wishes[wishIndex], [wishIndex]);
 
@@ -151,21 +142,6 @@ export default function App() {
     launchConfetti();
     window.setTimeout(() => setPartyMode(false), 2200);
     window.setTimeout(() => setShowGuests(false), 3600);
-  };
-
-  const onAiWish = async () => {
-    setAiLoading(true);
-    setAiError(null);
-    setAiWish(null);
-    try {
-      const wish = await fetchAiWish();
-      setAiWish(wish);
-      launchConfetti();
-    } catch (e) {
-      setAiError('The AI wishing machine is taking a break 🐾 Try again!');
-    } finally {
-      setAiLoading(false);
-    }
   };
 
   return (
@@ -183,22 +159,11 @@ export default function App() {
             <button className="wish-button" onClick={onGetWishes}>
               Get Birthday Wishes
             </button>
-            <button className="wish-button ai-button" onClick={onAiWish} disabled={aiLoading}>
-              {aiLoading ? '✨ Thinking…' : '🤖 AI Birthday Wish'}
-            </button>
           </div>
           <article className="wish-panel" aria-live="polite">
             <h2>{wish.title}</h2>
             <p>{wish.body}</p>
           </article>
-          {(aiWish || aiError || aiLoading) && (
-            <article className="wish-panel ai-wish-panel" aria-live="polite">
-              <h2>✨ AI Says…</h2>
-              {aiLoading && <p className="ai-loading">Summoning birthday magic from the AI…</p>}
-              {aiError && <p className="ai-error">{aiError}</p>}
-              {aiWish && <p>{aiWish}</p>}
-            </article>
-          )}
         </section>
 
         <section className="news-desk card reveal-up-delayed" aria-label="Celebration news desk">
@@ -224,7 +189,7 @@ export default function App() {
         <section className="gallery card reveal-up-delayed" aria-label="Birthday and schnauzer gallery">
           {gallery.map((item) => (
             <figure className="tile" key={item.src}>
-              <img src={item.src} alt={item.alt} loading="lazy" />
+              <img src={assetUrl(item.src)} alt={item.alt} loading="lazy" />
             </figure>
           ))}
         </section>
@@ -234,30 +199,12 @@ export default function App() {
           aria-live="polite"
           aria-hidden={!showGuests}
         >
-          <article className="guest-card brad">
-            <img
-              src="http://schnode.local:3002/_astro/breimer_profile.DYMzLsg8_2iwWhu.webp"
-              alt="Brad Reimer portrait"
-              loading="lazy"
-            />
-            <p>Brad says: Happy Birthday, Wendi!</p>
-          </article>
-          <article className="guest-card hermann">
-            <img
-              src="http://schnode.local:3002/_astro/hermann_profile.BB4SKGlN_Z2cin5p.webp"
-              alt="Hermann schnauzer portrait"
-              loading="lazy"
-            />
-            <p>Hermann says: Happy Birthday, Wendi!</p>
-          </article>
-          <article className="guest-card fibs">
-            <img
-              src="http://schnode.local:3002/_astro/fibs_profile.BQUKAJ6l_Z1C3dz5.webp"
-              alt="Fibs schnauzer portrait"
-              loading="lazy"
-            />
-            <p>Fibs says: Happy Birthday, Wendi!</p>
-          </article>
+          {guests.map((guest) => (
+            <article className={`guest-card ${guest.id}`} key={guest.id}>
+              <img src={assetUrl(guest.image)} alt={guest.alt} loading="lazy" />
+              <p>{guest.quote}</p>
+            </article>
+          ))}
         </section>
       </main>
     </div>

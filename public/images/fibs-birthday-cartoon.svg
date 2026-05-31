@@ -1,0 +1,32 @@
+<svg width="640" height="400" viewBox="0 0 640 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="400" rx="28" fill="#F3F0FF"/>
+  <circle cx="96" cy="84" r="15" fill="#9775FA"/>
+  <circle cx="548" cy="66" r="18" fill="#748FFC"/>
+  <circle cx="586" cy="96" r="11" fill="#FF922B"/>
+  <ellipse cx="322" cy="344" rx="172" ry="28" fill="#DDE5FF"/>
+  <ellipse cx="322" cy="228" rx="122" ry="96" fill="#A68A64"/>
+  <ellipse cx="228" cy="176" rx="35" ry="52" fill="#937955"/>
+  <ellipse cx="416" cy="176" rx="35" ry="52" fill="#937955"/>
+  <circle cx="322" cy="172" r="90" fill="#A68A64"/>
+  <ellipse cx="322" cy="206" rx="62" ry="50" fill="#EFE7DA"/>
+  <circle cx="288" cy="164" r="9" fill="#2B2D42"/>
+  <circle cx="356" cy="164" r="9" fill="#2B2D42"/>
+  <ellipse cx="322" cy="198" rx="14" ry="10" fill="#2B2D42"/>
+  <path d="M298 220C304 230 315 236 322 236C329 236 340 230 346 220" stroke="#2B2D42" stroke-width="6" stroke-linecap="round"/>
+  <rect x="266" y="244" width="112" height="86" rx="35" fill="#A68A64"/>
+  <rect x="240" y="306" width="35" height="54" rx="14" fill="#937955"/>
+  <rect x="369" y="306" width="35" height="54" rx="14" fill="#937955"/>
+  <path d="M388 258C420 246 454 266 462 298" stroke="#937955" stroke-width="14" stroke-linecap="round"/>
+  <path d="M322 100L376 158H268L322 100Z" fill="#748FFC"/>
+  <circle cx="322" cy="92" r="10" fill="#FF922B"/>
+  <path d="M246 252C274 234 370 234 398 252" stroke="#FF6B6B" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="322" cy="250" r="20" fill="#FF6B6B"/>
+  <path d="M322 236C336 222 356 224 364 240C350 250 334 250 322 236Z" fill="#FFD43B"/>
+  <path d="M322 236C308 222 288 224 280 240C294 250 310 250 322 236Z" fill="#FFD43B"/>
+  <path d="M78 276C118 248 170 248 210 276" stroke="#9775FA" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="94" cy="300" r="10" fill="#9775FA"/>
+  <circle cx="132" cy="310" r="10" fill="#748FFC"/>
+  <circle cx="170" cy="300" r="10" fill="#FF922B"/>
+  <circle cx="208" cy="312" r="10" fill="#FA5252"/>
+  <text x="322" y="372" text-anchor="middle" fill="#5F3DC4" font-family="Arial, sans-serif" font-size="30" font-weight="700">Fibs is celebration ready!</text>
+</svg>
